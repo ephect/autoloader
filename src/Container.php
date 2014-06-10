@@ -2,15 +2,28 @@
 
 namespace Ephect\AutoLoader;
 
-class AutoLoader
+class Container
 {
     
+    /*
+     * Array of prefixes and basepaths
+     * 
+     * Each namespace is a key. Ex:
+     * 
+     * Ephect\Autoloader => $prefixes['ephect']['autoloader']
+     */
     private $prefixes = array();
     
+    /*
+     * Array of already loaded classes
+     */
     private $loaded = array();
     
     private $debug;
     
+    /*
+     * Register with SPL at the end of the queue
+     */
     function register()
     {
         spl_autoload_register(
@@ -20,11 +33,17 @@ class AutoLoader
                 );
     }
     
+    /*
+     * Unregister from SPL
+     */
     function unregister()
     {
         spl_autoload_unregister(array($this, "loadFile"));
     }
     
+    /*
+     * Add a prefix & basepath to $this->prefixes
+     */
     function addPrefix($prefix, $basepath)
     {
         
@@ -39,6 +58,8 @@ class AutoLoader
                 continue;
             }
             
+            $val = strtolower($val);
+            
             if (!isset($objPrefix[$val])) {
                 $objPrefix[$val] = array();
             }
@@ -50,6 +71,9 @@ class AutoLoader
         
     }
     
+    /*
+     * Attempt to load a file
+     */
     function loadFile($class)
     {
         if (isset($this->loaded[$class])) {
@@ -64,6 +88,9 @@ class AutoLoader
         return false;
     }
     
+    /*
+     * Try to find the class file based on the input class
+     */
     function findFile($class)
     {
         $arrNS = explode("\\", $class);
@@ -73,6 +100,8 @@ class AutoLoader
         $pathSub = "";
         
         foreach ($arrNS as $key => $val) {
+            $val = strtolower($val);
+            
             if (!isset($objPrefix[$val])) {
                 break;
             }
@@ -103,6 +132,9 @@ class AutoLoader
         
     }
     
+    /*
+     * Require the file
+     */
     function requireFile($file)
     {
         require $file;
