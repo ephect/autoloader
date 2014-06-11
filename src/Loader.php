@@ -2,7 +2,7 @@
 
 namespace Ephect\AutoLoader;
 
-class Container
+class Loader
 {
     
     /*
